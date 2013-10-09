@@ -1,102 +1,119 @@
 'use strict';
 
-angular.module('d3App.directives', [])
+angular.module('d3App.directives', ['ng'])
   .directive('graph', function () {
-    return function (scope, element, attrs) {
-      var pointType = '';
-      var syncObj = '?';
+      return {
+          // scope -- not a new one.  but appending these attributes (@)
+          scope: {
+              data: '@graphData',
+              domain: '@graphDomain',
+              type: '@graphType'
+          },
+          link: function (scope, element, attrs) {
+              var pointType = '';
+              var syncObj = '?';
 
-      var onRedraw = function (graph) {
-        scope.domain = graph.x.domain();
-        scope.panMode = graph.panMode;
-        scope.$apply();
-      };
+              // this isnt used
+              var onRedraw = function (graph) {
+                  scope.domain = graph.x.domain();
+                  scope.panMode = graph.panMode;
+                  scope.$apply();
+              };
 
-      var onPointSelect = function (graph, point) {
-        scope.selectedPoint = {
-          load: point.y
-        };
-        scope.$apply();
-      };
+              // this isnt used
+              var onPointSelect = function (graph, point) {
+                  scope.selectedPoint = {
+                      load: point.y
+                  };
+                  scope.$apply();
+              };
 
-      element.empty();
+              var graph;
 
-      var graph;
-      
-      scope.$watch(attrs.graphData, function (value) {
-        if (value) {
-          graph = new Rickshaw.Graph({
-            xmax: 60,
-            xmin: 0,
-            ymax: 40,
-            ymin: 0,
-            onRedraw: onRedraw,
-            onPointSelect: onPointSelect,
-            element: element,
-            width: 900,
-            height: 500,
-            renderer: 'area',
-            stroke: true,
-            preserve: true,
-            series: value
-          });
+              // watch the data... 
+              scope.$watch('data', function (changed) {
+                  
+                  if (changed) {
+                      var value = scope.$eval(changed);
+                      if (!graph) {
+                          // graphsvc.create or something...
 
-          var ticksTreatment = 'glow';
-          graph.render();
+                          graph = new Rickshaw.Graph({
+                              element: element.get(0),
+                              width: element.width(),
+                              height: element.height(),
+                              renderer: 'area',
+                              stroke: true,
+                              preserve: true,
+                              series: value
+                          });
 
-          var xAxis = new Rickshaw.Graph.Axis.Time({
-            graph: graph,
-            ticksTreatment: ticksTreatment,
-            timeFixture: new Rickshaw.Fixtures.Time.Local()
-          });
+                          var xmax = 60,
+                              xmin = 0,
+                              ymax = 40,
+                              ymin = 0,
+                              onRedraw = onRedraw,
+                              onPointSelect = onPointSelect;
 
-          
-          var yAxis = new Rickshaw.Graph.Axis.Y({
-            graph: graph,
-            tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-            ticksTreatment: ticksTreatment
-          });
+                          var ticksTreatment = 'glow';
 
-          xAxis.render();
-          yAxis.render();
+                          var xAxis = new Rickshaw.Graph.Axis.Time({
+                              graph: graph,
+                              ticksTreatment: ticksTreatment,
+                              timeFixture: new Rickshaw.Fixtures.Time.Local()
+                          });
 
-          setInterval(function () {
-            random.removeData(seriesData);
-            random.addData(seriesData);
-            graph.update();
+                          var yAxis = new Rickshaw.Graph.Axis.Y({
+                              graph: graph,
+                              tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                              ticksTreatment: ticksTreatment
+                          });
 
-          }, 3000);
+                          graph.render();
+                          xAxis.render();
+                          yAxis.render();
+                      }
 
-        }
-      });
+                      // just replacing data with current
+                      for (var i = 0; i < value.length; i++) {
+                          if (graph.series[i]) {
+                              graph.series[i] = value[i];
+                          }
+                      }
+                      // render
+                      graph.update();
+                  }
+              });
+              
+              // this isnt used
+              scope.$watch(attrs.graphType, function (value) {
+                  switch (value) {
+                      case 'load':
+                          break;
+                      case 'time':
+                          break;
+                      default:
+                          break;
+                  }
+              });
 
-      scope.$watch(attrs.graphType, function (value) {
-        switch (value) {
-          case 'load':
-            break;
-          case 'time':
-            break;
-          default:
-            break;
-        }
-      });
-
-      // watch attribute graph-domain on directive
-      scope.$watch(attrs.graphDomain, function (value) {
-        if (value) {
-          graph.panMode = scope.panMode;
-          graph.x.domain(value);
-        }
-      });
-    }
-  }
-);
+              // watch attribute graph-domain on directive
+              // this isnt used
+              scope.$watch(attrs.graphDomain, function (value) {
+                  if (value) {
+                      graph.panMode = scope.panMode;
+                      graph.x.domain(value);
+                  }
+              });
+          }
+      }
+  });
 
 
 angular.module('d3App', ['d3App.directives'])
   .config(function ($routeProvider, $locationProvider) {
-    $locationProvider.html5Mode(true);
-    $routeProvider
-		.when('/', { templateUrl: 'views/main.html', controller: 'MainCtrl' })
-		.otherwise({ redirectTo: '/' });
+      $locationProvider.html5Mode(true);
+      $routeProvider
+          .when('/', { templateUrl: 'views/main.html', controller: 'MainCtrl' })
+          .otherwise({ redirectTo: '/' });
   });
