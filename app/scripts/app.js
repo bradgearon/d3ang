@@ -34,9 +34,9 @@ angular.module('d3App.directives', ['ng', 'd3App.services'])
 
 
 angular.module('d3App', ['d3App.directives'])
-    .config(function ($routeProvider, $locationProvider) {
-        $locationProvider.html5Mode(true);
-        $routeProvider
-            .when('/', { templateUrl: 'views/main.html', controller: 'MainCtrl' })
-            .otherwise({ redirectTo: '/' });
-    });
+    .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
+      $locationProvider.html5Mode(true);
+      $routeProvider
+          .when('/', { templateUrl: 'views/main.html', controller: 'MainCtrl' })
+          .otherwise({ redirectTo: '/' });
+    }]);
