@@ -1,7 +1,6 @@
 'use strict';
-angular.module('d3App')
+angular.module('d3App.controllers', [])
     .controller('MainCtrl', ['$scope', 'randomSvc', function ($scope, $random) {
-
         $scope.doSomething = function () {
             console.log(arguments);
             console.log(this);
@@ -32,6 +31,11 @@ angular.module('d3App')
           palette: new Rickshaw.Color.Palette({ scheme: 'classic9' })
         };
 
-        $scope.data = new $random(opts);
+        $scope.data = $random.init(opts).updateData(true);
+        $scope.data2 = $random.init(opts).updateData(true);
+
+        $scope.apply = true;
+        $scope.speed = 1000;
+
     }]);
 

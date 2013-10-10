@@ -1,5 +1,5 @@
-angular.module('d3App.services', [])
-    .factory('randomSvc', function () {
+angular.module('d3App.random', [])
+    .factory('randomSvc', [function () {
 
         var random = function() { };
 
@@ -16,21 +16,21 @@ angular.module('d3App.services', [])
             this.data = [];
             this.colors = [];
 
-            for(var i = 0; i < opts.length; i++) {
+            for(var i = 0; i < this.opts.length; i++) {
                 this.data.push([]);
                 this.colors.push(this.opts.palette.color());
             }
 
             for (i = 0; i < 150; i++) {
-                this.randomizer.addData();
+                this.randomizer.addData(this.data);
             }
 
-            return this.data;
+            return this;
         };
 
 
         random.prototype.updateData = function (preserve) {
-            this.data = preserve && this.data || init(this.opts);
+            this.data = preserve && this.data || this.init(this.opts);
             var meta = [];
 
             this.randomizer.removeData(this.data);
@@ -47,4 +47,4 @@ angular.module('d3App.services', [])
         };
 
         return new random();
-    });
+    }]);

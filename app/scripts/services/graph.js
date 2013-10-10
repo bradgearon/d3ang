@@ -1,16 +1,14 @@
 angular.module('d3App.services', [])
     .factory('graphSvc', [function () {
 
-        var graph = function () {
-        };
+        var graph = function () {};
 
         graph.prototype.init = function (opts) {
             if (opts && opts.element) {
-
                 this.graphImpl = new Rickshaw.Graph({
-                    element: opts.element.get(0),
-                    width: opts.element.width(),
-                    height: opts.element.height(),
+                    element: opts.element,
+                    width: opts.width,
+                    height: opts.height,
                     renderer: 'area',
                     stroke: true,
                     preserve: true,
@@ -40,7 +38,6 @@ angular.module('d3App.services', [])
 
         graph.prototype.update = function () {
             this.graphImpl.update();
-            return this;
         };
 
         graph.prototype.setSeries = function (data) {
@@ -52,8 +49,11 @@ angular.module('d3App.services', [])
                     }
                 }
             }
-            return this;
         };
 
-        return new graph();
+        graph.prototype.$get = function () {
+            return new graph();
+        };
+
+        return graph;
     }]);
