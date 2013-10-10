@@ -27,6 +27,14 @@ module.exports = function (grunt) {
   } catch (e) {}
 
   grunt.initConfig({
+	githubPages: {
+	  target: {
+		options: {
+			commitMessage: 'automagic https://github.com/thanpolas/grunt-github-pages'
+		},
+			src: 'dist'
+		}
+	},
     yeoman: yeomanConfig,
     watch: {
       coffee: {
@@ -204,7 +212,7 @@ module.exports = function (grunt) {
       html: ['<%= yeoman.dist %>/{,*/}*.html'],
       css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
       options: {
-        dirs: ['<%= yeoman.dist %>']
+        dirs: ['<%= yeoman.dist %>', '<%= yeoman.app %>/min']
       }
     },
     imagemin: {
@@ -272,6 +280,7 @@ module.exports = function (grunt) {
           src: [
             '*.{ico,png,txt}',
             '.htaccess',
+			'scripts/min/*',
             'bower_components/**/*',
             'images/{,*/}*.{gif,webp}',
             'styles/fonts/*'
@@ -333,7 +342,14 @@ module.exports = function (grunt) {
         }]
       }
     },
-    uglify: {
+    uglify: 
+	{
+	  min: {
+	  options: {
+		mangle: false
+		},
+		files: {'<%= yeoman.dist %>/scripts/min/rickshaw.min.js':['<%= yeoman.app %>/bower_components/rickshaw/rickshaw.min.js']}
+	  },
       dist: {
         files: {
           '<%= yeoman.dist %>/scripts/scripts.js': [
@@ -380,6 +396,11 @@ module.exports = function (grunt) {
     'uglify',
     'rev',
     'usemin'
+  ]);
+  
+  grunt.registerTask('deploy', [
+	'build',
+	'githubPages:target'
   ]);
 
   grunt.registerTask('default', [

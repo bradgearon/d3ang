@@ -1,7 +1,6 @@
 'use strict';
 angular.module('d3App.services', [])
-    .factory('graphSvc', function () {
-
+    .factory('graphSvc', [ function () {
       var graph = function () {};
 
       graph.prototype.init = function (opts) {
@@ -57,11 +56,11 @@ angular.module('d3App.services', [])
       };
 
       return graph;
-    });
+    }]);
 
 
 angular.module('d3App.directives', ['ng', 'd3App.services'])
-    .directive('graph', function (graphSvc) {
+    .directive('graph', ['graphSvc', function (graphSvc) {
       return {
         scope: {
           data: '=graphData',
@@ -131,14 +130,12 @@ angular.module('d3App.directives', ['ng', 'd3App.services'])
 
         }
       }
-    })
-;
-
-
+    }]);
+	
 angular.module('d3App', ['d3App.directives'])
-    .config(function ($routeProvider, $locationProvider) {
+    .config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
       $locationProvider.html5Mode(true);
       $routeProvider
           .when('/', { templateUrl: 'views/main.html', controller: 'MainCtrl' })
           .otherwise({ redirectTo: '/' });
-    });
+    }]);
