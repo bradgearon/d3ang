@@ -30,7 +30,7 @@ angular.module('d3App.random', [])
 
 
         random.prototype.updateData = function (preserve) {
-            this.data = preserve && this.data || this.init(this.opts);
+            this.data = preserve && this.data || this.init(this.opts).data;
             var meta = [];
 
             this.randomizer.removeData(this.data);
@@ -46,5 +46,10 @@ angular.module('d3App.random', [])
             return meta;
         };
 
-        return new random();
+        random.prototype.$get = function () {
+            return new random();
+        };
+
+
+        return random;
     }]);

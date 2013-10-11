@@ -6,6 +6,12 @@ angular.module('d3App.controllers', [])
             console.log(this);
         };
 
+        var opts = {
+            palette: new Rickshaw.Color.Palette({ scheme: 'classic9' })
+        };
+
+        var random = new $random().init(opts);
+        var random2 = new $random().init(opts);
         var intervalId = 0;
 
         // note this will rebind when config.speed changes (rebind the interval)
@@ -18,7 +24,8 @@ angular.module('d3App.controllers', [])
                 console.log('adding data');
 
                 // THIS is not in angular scope
-                $scope.data = $random.updateData(true);
+                $scope.data = random.updateData(true);
+                $scope.data2 = random2.updateData(false);
 
                 if ($scope.apply) {
                     $scope.$apply();
@@ -27,12 +34,8 @@ angular.module('d3App.controllers', [])
             }, value);
         });
 
-        var opts = {
-          palette: new Rickshaw.Color.Palette({ scheme: 'classic9' })
-        };
-
-        $scope.data = $random.init(opts).updateData(true);
-        $scope.data2 = $random.init(opts).updateData(true);
+        $scope.data = random.updateData(true);
+        $scope.data2 = random2.updateData(true);
 
         $scope.apply = true;
         $scope.speed = 1000;
